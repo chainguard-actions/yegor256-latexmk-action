@@ -1,0 +1,31 @@
+name: Test latexmk with default path
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create minimal LaTeX document in workspace root
+        run: |
+          cat > "$GITHUB_WORKSPACE/default-test.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Default path test.
+          \end{document}
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          path: '.'
+          opts: '-pdf -interaction=nonstopmode default-test.tex'
+
+      - name: Assert PDF was generated
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/default-test.pdf" ]; then
+            echo "FAIL: expected default-test.pdf to be generated in workspace root"
+            exit 1
+          fi
+          echo "PASS: default-test.pdf was generated in workspace root"

@@ -1,0 +1,32 @@
+name: Test latexmk with custom opts
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Create minimal LaTeX document
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/opts-test"
+          cat > "$GITHUB_WORKSPACE/opts-test/paper.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Custom opts test.
+          \end{document}
+          EOF
+
+      - id: action
+        uses: .
+        with:
+          path: opts-test
+          opts: '-pdf -interaction=nonstopmode paper.tex'
+
+      - name: Assert PDF was generated with custom opts
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/opts-test/paper.pdf" ]; then
+            echo "FAIL: expected paper.pdf to be generated"
+            exit 1
+          fi
+          echo "PASS: paper.pdf was generated with custom opts"
