@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 Yegor Bugayenko
+# SPDX-License-Identifier: MIT
+---
+name: 'latexmk-action'
+description: 'Build LaTeX document using Makefile'
+branding:
+  icon: alert-triangle
+  color: orange
+runs:
+  using: 'docker'
+  image: 'docker://yegor256/latexmk-action@sha256:644c63a8253f73a52d157b85d5edfd6443c36c789423531c9f9228d56e084f12' # 0.19.0
+inputs:
+  path:
+    description: 'The directory with Makefile'
+    required: false
+    default: '.'
+  cmd:
+    description: 'The command to run'
+    required: false
+    default: 'latexmk'
+  opts:
+    description: 'Command-line options for latexmk'
+    required: false
+    default: ''
+  depends:
+    description: 'Path of DEPENDS.txt file'
+    required: false
+    default: ''
+  debs:
+    description: 'List of Debian packages to install with apt-get'
+    required: false
+    default: ''
+  packages:
+    description: 'List of TeXLive packages to install with tlmgr'
+    required: false
+    default: ''

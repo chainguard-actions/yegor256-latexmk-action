@@ -1,0 +1,30 @@
+name: Test default latexmk command
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create minimal LaTeX project in workspace subdir
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/latex-default"
+          cat > "$GITHUB_WORKSPACE/latex-default/main.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Hello from latexmk default command!
+          \end{document}
+          EOF
+      - id: action
+        uses: .
+        with:
+          path: latex-default
+          opts: '-pdf -interaction=nonstopmode main.tex'
+      - name: Assert PDF was created with default cmd
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/latex-default/main.pdf" ]; then
+            echo "FAIL: expected main.pdf to be created in latex-default/"
+            ls -la "$GITHUB_WORKSPACE/latex-default/" || true
+            exit 1
+          fi
+          echo "PASS: main.pdf was created using default latexmk command"

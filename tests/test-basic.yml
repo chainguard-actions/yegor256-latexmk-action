@@ -1,0 +1,31 @@
+name: Test basic latexmk usage
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create minimal LaTeX project in workspace subdir
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/latex-basic"
+          cat > "$GITHUB_WORKSPACE/latex-basic/main.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Hello, World!
+          \end{document}
+          EOF
+      - id: action
+        uses: .
+        with:
+          path: latex-basic
+          cmd: latexmk
+          opts: '-pdf -interaction=nonstopmode main.tex'
+      - name: Assert PDF was created
+        run: |
+          if [ ! -f "$GITHUB_WORKSPACE/latex-basic/main.pdf" ]; then
+            echo "FAIL: expected main.pdf to be created"
+            ls -la "$GITHUB_WORKSPACE/latex-basic/" || true
+            exit 1
+          fi
+          echo "PASS: main.pdf was created"
