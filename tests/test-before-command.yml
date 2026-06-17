@@ -1,0 +1,31 @@
+name: Test before command input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Create LaTeX document
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/latex-before"
+          cat > "$GITHUB_WORKSPACE/latex-before/main.tex" << 'EOF'
+          \documentclass{article}
+          \begin{document}
+          Before command test.
+          \end{document}
+          EOF
+      - id: action
+        uses: .
+        with:
+          path: latex-before
+          opts: '-pdf -interaction=nonstopmode'
+          before: 'echo "before-hook-ran" > /tmp/before-marker.txt'
+      - name: Assert PDF was generated
+        run: |
+          ls -la "$GITHUB_WORKSPACE/latex-before/"
+          if [ ! -f "$GITHUB_WORKSPACE/latex-before/main.pdf" ]; then
+            echo "FAIL: expected main.pdf to be generated"
+            exit 1
+          fi
+          echo "PASS: main.pdf was generated with before command"
