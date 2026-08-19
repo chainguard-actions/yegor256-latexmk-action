@@ -1,0 +1,26 @@
+name: Test DEPENDS.txt support
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run latexmk-action with DEPENDS.txt
+        id: action
+        uses: .
+        with:
+          path: tests/fixtures/latex-with-deps
+          depends: tests/fixtures/latex-with-deps/DEPENDS.txt
+          opts: '-pdf'
+      - name: Assert PDF was generated
+        run: |
+          echo "Checking for generated PDF..."
+          if ls tests/fixtures/latex-with-deps/*.pdf 1>/dev/null 2>&1; then
+            echo "PASS: PDF file(s) found:"
+            ls tests/fixtures/latex-with-deps/*.pdf
+          else
+            echo "FAIL: No PDF files found in tests/fixtures/latex-with-deps"
+            ls -al tests/fixtures/latex-with-deps/ || true
+            exit 1
+          fi

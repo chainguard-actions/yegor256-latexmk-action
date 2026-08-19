@@ -49,5 +49,4 @@ if [ -n "${INPUT_DOCUMENT}" ]; then
   opts+=("${INPUT_DOCUMENT}")
 fi
 
-read -r -a cmd <<< "${INPUT_CMD}"
-"${cmd[@]}" "${opts[@]}"
+eval "${INPUT_CMD} ${opts[*]}"

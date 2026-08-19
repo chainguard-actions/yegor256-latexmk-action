@@ -1,0 +1,18 @@
+name: Test custom command
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Run latexmk-action with custom echo command
+        id: action
+        uses: .
+        with:
+          path: tests/fixtures/latex
+          cmd: echo
+          opts: 'latexmk-action-custom-cmd-test'
+      - name: Assert action completed successfully
+        run: |
+          echo "PASS: custom cmd ran successfully (action did not fail)"
